@@ -7,10 +7,6 @@
 #   4. Benchmark    - perbandingan algoritma dan teknik imbalance
 #
 # Model dilatih dari DATA PENUH CICIDS2017 (dimuat dari database).
-#
-# Cara menjalankan:
-#   pip install streamlit plotly pandas numpy scikit-learn xgboost imbalanced-learn
-#   streamlit run dashboard_utama.py
 # ============================================================
 
 import os
@@ -229,6 +225,20 @@ elif halaman == "Pengujian":
 
     st.caption(f"Model aktif: #{meta['id']} (F1 {meta['f1']:.4f}, dari data penuh). "
                "Jika file memiliki kolom 'Label', akurasi dihitung otomatis.")
+
+    # Sediakan tombol unduh file contoh, agar pengguna (termasuk penguji)
+    # dapat mencoba pengujian tanpa menyiapkan data sendiri.
+    if os.path.exists("contoh_uji_jaringan.csv"):
+        with open("contoh_uji_jaringan.csv", "rb") as f_contoh:
+            st.download_button(
+                "Unduh file contoh untuk diuji",
+                data=f_contoh.read(),
+                file_name="contoh_uji_jaringan.csv",
+                mime="text/csv",
+                help="Unduh berkas contoh ini, lalu unggah kembali di bawah untuk mencoba pengujian.",
+            )
+        st.caption("Belum punya data uji? Unduh berkas contoh di atas, lalu unggah kembali di bawah.")
+
     berkas = st.file_uploader("Unggah file CSV (format CICIDS2017)", type=["csv"])
 
     if berkas is not None:
@@ -337,4 +347,4 @@ elif halaman == "Benchmark":
     st.caption("SMOTE memberi hasil terbaik, menaikkan F1 dari 0,7981 menjadi 0,9259.")
 
 st.markdown("---")
-st.caption("Sistem Deteksi Intrusi Adaptif Berbasis Machine Learning — Mekanisme Continuous Retraining. Dataset CICIDS2017.")
+st.caption("Kelompok 2 Kelas DS2 - Sistem Deteksi Intrusi Adaptif Berbasis Machine Learning — Mekanisme Continuous Retraining. Dataset CICIDS2017.")
