@@ -291,6 +291,32 @@ elif halaman == "Pengujian":
                                xaxis_title="Jumlah Aliran", margin=dict(t=40,b=20))
             st.plotly_chart(figd, use_container_width=True)
 
+            # Panel daftar jenis serangan terdeteksi (data nyata dari file ini).
+            # Hanya jenis serangan (selain BENIGN) yang ditampilkan.
+            serangan_dist = dist[dist.index != "BENIGN"]
+            if len(serangan_dist) > 0:
+                st.subheader("Jenis Serangan Terdeteksi pada File Ini")
+                st.caption("Daftar jenis serangan beserta jumlahnya, dihitung dari hasil prediksi file yang diunggah.")
+                total_serangan = int(serangan_dist.sum())
+                for jenis, jumlah in serangan_dist.items():
+                    porsi = jumlah / total_serangan if total_serangan else 0
+                    # tingkat bahaya sederhana berdasarkan proporsi
+                    if porsi >= 0.30:
+                        level, warna = "Tinggi", CORAL
+                    elif porsi >= 0.10:
+                        level, warna = "Sedang", AMBER
+                    else:
+                        level, warna = "Rendah", BLUE
+                    st.markdown(
+                        f"""<div style="background:#16294D; padding:10px 16px; border-radius:8px; margin-bottom:8px;
+                        display:flex; justify-content:space-between; align-items:center">
+                        <span style="color:white; font-weight:bold; font-size:15px">{jenis}</span>
+                        <span style="color:#CADCFC; font-size:14px">{int(jumlah)} aliran &nbsp; · &nbsp;
+                        <span style="color:{warna}; font-weight:bold">{level}</span></span>
+                        </div>""", unsafe_allow_html=True)
+            else:
+                st.success("Tidak ada serangan terdeteksi pada file ini. Seluruh aliran tergolong normal (BENIGN).")
+
             kk = [c for c in df_hasil.columns if c not in ["Label","Prediksi"]][:4]
             tampil = kk + (["Label","Prediksi"] if punya_label else ["Prediksi"])
             st.subheader("Rincian Prediksi (100 baris pertama)")
